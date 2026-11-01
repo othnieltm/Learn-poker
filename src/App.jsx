@@ -156,6 +156,7 @@ function App() {
   const [walkthroughAnswer, setWalkthroughAnswer] = useState(null);
   const [cardQuiz, setCardQuiz] = useState(() => shuffleDeck()[0]);
   const [cardGuess, setCardGuess] = useState({ rank: '', suit: '' });
+  const [cardFeedback, setCardFeedback] = useState(null);
   const [position, setPosition] = useState('Dealer / Button');
   const [chips, setChips] = useState({ White: 0, Red: 0, Green: 0, Black: 0 });
   const [roundIndex, setRoundIndex] = useState(0);
@@ -201,11 +202,11 @@ function App() {
 
   const checkCardGuess = () => {
     if (!cardGuess.rank || !cardGuess.suit) {
-      setNotice('Choose both a rank and a suit.');
+      setCardFeedback({ correct: false, text: 'Choose both a rank and a suit.' });
     } else if (Number(cardGuess.rank) === cardQuiz.rank && cardGuess.suit === cardQuiz.suit) {
-      setNotice(`Correct: ${RANK_NAMES[cardQuiz.rank] ?? cardQuiz.rank} of ${SUIT_NAMES[cardQuiz.suit]}.`);
+      setCardFeedback({ correct: true, text: `Correct: ${RANK_NAMES[cardQuiz.rank] ?? cardQuiz.rank} of ${SUIT_NAMES[cardQuiz.suit]}.` });
     } else {
-      setNotice(`Not quite. The drawn card is ${face(cardQuiz)}. Try again or draw another card.`);
+      setCardFeedback({ correct: false, text: `Not quite. The drawn card is ${face(cardQuiz)}. Try again or draw another card.` });
     }
   };
 
@@ -624,13 +625,14 @@ function App() {
             <div className="interactive-card"><PlayingCard code={cardLabel(cardQuiz)} /></div>
             <p>Choose the rank and suit, then check your answer.</p>
             <div className="form-grid">
-              <label>Rank<select aria-label="Guess card rank" value={cardGuess.rank} onChange={(event) => setCardGuess((guess) => ({ ...guess, rank: event.target.value }))}><option value="">Select rank</option>{RANK_OPTIONS.map((rank) => <option value={rank} key={rank}>{RANK_NAMES[rank] ?? rank}</option>)}</select></label>
-              <label>Suit<select aria-label="Guess card suit" value={cardGuess.suit} onChange={(event) => setCardGuess((guess) => ({ ...guess, suit: event.target.value }))}><option value="">Select suit</option>{Object.entries(SUIT_NAMES).map(([suit, name]) => <option key={suit} value={suit}>{name}</option>)}</select></label>
+              <label>Rank<select aria-label="Guess card rank" value={cardGuess.rank} onChange={(event) => { setCardGuess((guess) => ({ ...guess, rank: event.target.value })); setCardFeedback(null); }}><option value="">Select rank</option>{RANK_OPTIONS.map((rank) => <option value={rank} key={rank}>{RANK_NAMES[rank] ?? rank}</option>)}</select></label>
+              <label>Suit<select aria-label="Guess card suit" value={cardGuess.suit} onChange={(event) => { setCardGuess((guess) => ({ ...guess, suit: event.target.value })); setCardFeedback(null); }}><option value="">Select suit</option>{Object.entries(SUIT_NAMES).map(([suit, name]) => <option key={suit} value={suit}>{name}</option>)}</select></label>
             </div>
             <div className="button-row">
               <button className="primary" onClick={checkCardGuess}>Check card</button>
-              <button className="secondary" onClick={() => { setCardQuiz(shuffleDeck()[0]); setCardGuess({ rank: '', suit: '' }); setNotice('A new card was drawn.'); }}>Draw another card</button>
+              <button className="secondary" onClick={() => { setCardQuiz(shuffleDeck().find((card) => card.rank !== cardQuiz.rank || card.suit !== cardQuiz.suit)); setCardGuess({ rank: '', suit: '' }); setCardFeedback(null); }}>Draw another card</button>
             </div>
+            {cardFeedback && <p className={`feedback ${cardFeedback.correct ? 'correct' : 'incorrect'}`} role="status">{cardFeedback.text}</p>}
           </div>
         );
       case 3: {
