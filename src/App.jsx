@@ -156,6 +156,7 @@ function App() {
   const [walkthroughAnswer, setWalkthroughAnswer] = useState(null);
   const [cardQuiz, setCardQuiz] = useState(() => shuffleDeck()[0]);
   const [cardGuess, setCardGuess] = useState({ rank: '', suit: '' });
+  const [activityFeedback, setActivityFeedback] = useState(null);
   const [cardFeedback, setCardFeedback] = useState(null);
   const [position, setPosition] = useState('Dealer / Button');
   const [chips, setChips] = useState({ White: 0, Red: 0, Green: 0, Black: 0 });
@@ -202,13 +203,17 @@ function App() {
 
   const checkCardGuess = () => {
     if (!cardGuess.rank || !cardGuess.suit) {
-      setCardFeedback({ correct: false, text: 'Choose both a rank and a suit.' });
+      setActivityFeedback({ correct: false, text: 'Choose both a rank and a suit.' });
     } else if (Number(cardGuess.rank) === cardQuiz.rank && cardGuess.suit === cardQuiz.suit) {
-      setCardFeedback({ correct: true, text: `Correct: ${RANK_NAMES[cardQuiz.rank] ?? cardQuiz.rank} of ${SUIT_NAMES[cardQuiz.suit]}.` });
+      setActivityFeedback({ correct: true, text: `Correct: ${RANK_NAMES[cardQuiz.rank] ?? cardQuiz.rank} of ${SUIT_NAMES[cardQuiz.suit]}.` });
     } else {
-      setCardFeedback({ correct: false, text: `Not quite. The drawn card is ${face(cardQuiz)}. Try again or draw another card.` });
+      setActivityFeedback({ correct: false, text: `Not quite. The drawn card is ${face(cardQuiz)}. Try again or draw another card.` });
     }
   };
+
+  const renderActivityFeedback = () => activityFeedback && (
+    <p className={`feedback ${activityFeedback.correct ? 'correct' : 'incorrect'}`} role="status">{activityFeedback.text}</p>
+  );
 
   useEffect(() => {
     try {
@@ -260,6 +265,7 @@ function App() {
       }
       setSelectedAnswer(null);
       setQuizFeedback(null);
+      setActivityFeedback(null);
       setNotice('');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     };
@@ -278,6 +284,7 @@ function App() {
       setProgress((state) => ({ ...state, currentModule: id }));
       setSelectedAnswer(null);
       setQuizFeedback(null);
+      setActivityFeedback(null);
       setScenarioChoice('');
     }
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -625,14 +632,14 @@ function App() {
             <div className="interactive-card"><PlayingCard code={cardLabel(cardQuiz)} /></div>
             <p>Choose the rank and suit, then check your answer.</p>
             <div className="form-grid">
-              <label>Rank<select aria-label="Guess card rank" value={cardGuess.rank} onChange={(event) => { setCardGuess((guess) => ({ ...guess, rank: event.target.value })); setCardFeedback(null); }}><option value="">Select rank</option>{RANK_OPTIONS.map((rank) => <option value={rank} key={rank}>{RANK_NAMES[rank] ?? rank}</option>)}</select></label>
-              <label>Suit<select aria-label="Guess card suit" value={cardGuess.suit} onChange={(event) => { setCardGuess((guess) => ({ ...guess, suit: event.target.value })); setCardFeedback(null); }}><option value="">Select suit</option>{Object.entries(SUIT_NAMES).map(([suit, name]) => <option key={suit} value={suit}>{name}</option>)}</select></label>
+              <label>Rank<select aria-label="Guess card rank" value={cardGuess.rank} onChange={(event) => { setCardGuess((guess) => ({ ...guess, rank: event.target.value })); setActivityFeedback(null); }}><option value="">Select rank</option>{RANK_OPTIONS.map((rank) => <option value={rank} key={rank}>{RANK_NAMES[rank] ?? rank}</option>)}</select></label>
+              <label>Suit<select aria-label="Guess card suit" value={cardGuess.suit} onChange={(event) => { setCardGuess((guess) => ({ ...guess, suit: event.target.value })); setActivityFeedback(null); }}><option value="">Select suit</option>{Object.entries(SUIT_NAMES).map(([suit, name]) => <option key={suit} value={suit}>{name}</option>)}</select></label>
             </div>
             <div className="button-row">
               <button className="primary" onClick={checkCardGuess}>Check card</button>
-              <button className="secondary" onClick={() => { setCardQuiz(shuffleDeck().find((card) => card.rank !== cardQuiz.rank || card.suit !== cardQuiz.suit)); setCardGuess({ rank: '', suit: '' }); setCardFeedback(null); }}>Draw another card</button>
+              <button className="secondary" onClick={() => { setCardQuiz(shuffleDeck().find((card) => card.rank !== cardQuiz.rank || card.suit !== cardQuiz.suit)); setCardGuess({ rank: '', suit: '' }); setActivityFeedback(null); }}>Draw another card</button>
             </div>
-            {cardFeedback && <p className={`feedback ${cardFeedback.correct ? 'correct' : 'incorrect'}`} role="status">{cardFeedback.text}</p>}
+            {renderActivityFeedback()}
           </div>
         );
       case 3: {
@@ -646,9 +653,10 @@ function App() {
             <p>Player B: 9♥ 8♥ 7♥ 6♥ 5♥ + A♦ K♣</p>
             <p>Actual evaluator: Player A — {comparison.left.name}; Player B — {comparison.right.name}.</p>
             <div className="button-row">
-              <button className="choice" onClick={() => setNotice(comparison.result > 0 ? `Correct. ${comparison.left.name} beats ${comparison.right.name}.` : 'Player A does not win.')}>Player A wins</button>
-              <button className="choice" onClick={() => setNotice(comparison.result < 0 ? 'Correct. Player B wins.' : 'Player B does not win.')}>Player B wins</button>
+              <button className="choice" onClick={() => setActivityFeedback({ correct: comparison.result > 0, text: comparison.result > 0 ? `Correct. ${comparison.left.name} beats ${comparison.right.name}.` : 'Player A does not win.' })}>Player A wins</button>
+              <button className="choice" onClick={() => setActivityFeedback({ correct: comparison.result < 0, text: comparison.result < 0 ? 'Correct. Player B wins.' : 'Player B does not win.' })}>Player B wins</button>
             </div>
+            {renderActivityFeedback()}
             <p className="muted">Rank order, strongest first: {HAND_EXAMPLES.map(([name]) => name).join(' → ')}.</p>
           </div>
         );
@@ -694,7 +702,7 @@ function App() {
         const actionAnswer = (choice) => {
           setScenarioChoice(choice);
           const valid = ['Fold', 'Call', 'Raise', 'All-In'].includes(choice);
-          setNotice(valid ? `Correct: ${choice} is available while facing a 20-chip bet.` : `${choice} is not available while facing a 20-chip bet. Call, raise, fold, or go all-in.`);
+          setActivityFeedback({ correct: valid, text: valid ? `Correct: ${choice} is available while facing a 20-chip bet.` : `${choice} is not available while facing a 20-chip bet. Call, raise, fold, or go all-in.` });
         };
         return (
           <div className="activity-box">
@@ -703,6 +711,7 @@ function App() {
             <h4>Action decision</h4>
             <p>You have 100 chips. The current bet is 20; no chips are committed by you this round.</p>
             <div className="button-row">{actionDetails.map(([action]) => <button key={action} className={scenarioChoice === action ? 'choice selected' : 'choice'} onClick={() => actionAnswer(action)}>{action}</button>)}</div>
+            {renderActivityFeedback()}
           </div>
         );
       }
@@ -725,7 +734,8 @@ function App() {
             <h4>Who wins this showdown?</h4>
             <p>Board: J♦ 8♣ 3♥ Q♠ 9♠</p><p>Player A: J♠ 10♠ · Player B: A♦ Q♥</p>
             <p>Evaluator: Player A {result.left.name}; Player B {result.right.name}.</p>
-            <button className="primary" onClick={() => setNotice(result.result > 0 ? 'Correct: Player A wins with a straight (Q-J-10-9-8).' : 'The evaluator says Player B wins.')}>Compare hands</button>
+            <button className="primary" onClick={() => setActivityFeedback({ correct: result.result > 0, text: result.result > 0 ? 'Correct: Player A wins with a straight (Q-J-10-9-8).' : 'The evaluator says Player B wins.' })}>Compare hands</button>
+            {renderActivityFeedback()}
           </div>
         );
       }
@@ -757,15 +767,15 @@ function App() {
           ['A-A', 'Strong'], ['A-K', 'Strong'], ['A-Q', 'Strong'], ['5-5', 'Speculative'], ['8-7 suited', 'Speculative'], ['7-2 offsuit', 'Weak'],
         ];
         return (
-          <div className="activity-box"><h4>Classify a starting hand</h4><p>Choose a category for each example.</p><div className="choice-list">{hands.map(([hand, category]) => <div className="choice-line" key={hand}><strong>{hand}</strong>{['Strong', 'Speculative', 'Weak'].map((answer) => <button key={answer} className="choice" onClick={() => setNotice(answer === category ? `${hand}: correct, ${category.toLowerCase()}.` : `${hand}: try again. The lesson classifies this as ${category.toLowerCase()}.`)}>{answer}</button>)}</div>)}</div></div>
+          <div className="activity-box"><h4>Classify a starting hand</h4><p>Choose a category for each example.</p><div className="choice-list">{hands.map(([hand, category]) => <div className="choice-line" key={hand}><strong>{hand}</strong>{['Strong', 'Speculative', 'Weak'].map((answer) => <button key={answer} className="choice" onClick={() => setActivityFeedback({ correct: answer === category, text: answer === category ? `${hand}: correct, ${category.toLowerCase()}.` : `${hand}: try again. The lesson classifies this as ${category.toLowerCase()}.` })}>{answer}</button>)}</div>)}</div>{renderActivityFeedback()}</div>
         );
       }
       case 11:
-        return <ScenarioChoices title="Position advantage" prompt="You are first to act pre-flop with a weak offsuit hand. What is the sound beginner choice?" options={['Fold and wait for a better spot', 'Play every hand because it is free', 'Raise regardless of position']} correct={0} setNotice={setNotice} />;
+        return <ScenarioChoices title="Position advantage" prompt="You are first to act pre-flop with a weak offsuit hand. What is the sound beginner choice?" options={['Fold and wait for a better spot', 'Play every hand because it is free', 'Raise regardless of position']} correct={0} />;
       case 12:
-        return <ScenarioChoices title="A bluffing decision" prompt="The board is coordinated and your opponent has shown strength. You hold only a weak draw. What is a cautious beginner choice?" options={['Consider folding rather than forcing a bluff', 'Bluff every time', 'Call any bet automatically']} correct={0} setNotice={setNotice} />;
+        return <ScenarioChoices title="A bluffing decision" prompt="The board is coordinated and your opponent has shown strength. You hold only a weak draw. What is a cautious beginner choice?" options={['Consider folding rather than forcing a bluff', 'Bluff every time', 'Call any bet automatically']} correct={0} />;
       case 13:
-        return <ScenarioChoices title="Spot the mistake" prompt="A player calls every bet hoping to hit a draw, ignores position, and acts before their turn. Name the issue." options={['Chasing without odds and ignoring turn order', 'Protecting cards', 'Using a dealer button']} correct={0} setNotice={setNotice} />;
+        return <ScenarioChoices title="Spot the mistake" prompt="A player calls every bet hoping to hit a draw, ignores position, and acts before their turn. Name the issue." options={['Chasing without odds and ignoring turn order', 'Protecting cards', 'Using a dealer button']} correct={0} />;
       case 14:
         return (
           <div className="activity-box">
@@ -781,7 +791,7 @@ function App() {
           </div>
         );
       case 15:
-        return <ScenarioChoices title="Etiquette scenario" prompt="You are excited to call. What do you do?" options={['Wait for your turn and announce “call” clearly', 'Act while another player is thinking', 'Throw chips across the table']} correct={0} setNotice={setNotice} />;
+        return <ScenarioChoices title="Etiquette scenario" prompt="You are excited to call. What do you do?" options={['Wait for your turn and announce “call” clearly', 'Act while another player is thinking', 'Throw chips across the table']} correct={0} />;
       case 16: {
         const steps = ['Show and explain all ten hand rankings.', 'Deal a few practice hands face up.', 'Discuss decisions together without pressure.', 'Introduce chip values and blinds.', 'Play a slow heads-up game.'];
         return <div className="activity-box"><h4>Beginner teaching script</h4><p>Step {teachingStep + 1} of {steps.length}: {steps[teachingStep]}</p><div className="button-row"><button className="secondary" onClick={() => setTeachingStep((step) => Math.max(0, step - 1))}>Previous step</button><button className="primary" onClick={() => setTeachingStep((step) => Math.min(steps.length - 1, step + 1))}>Next teaching step</button><button className="choice" onClick={() => setTeachingStep(0)}>Restart script</button></div></div>;
@@ -791,7 +801,8 @@ function App() {
           <div className="activity-box">
             <h4>Flush-draw practice</h4><p>Your hand: A♠ K♠ · Flop: 2♠ 7♦ 9♠.</p>
             <p>Nine spades remain as flush outs. The opponent bets 50 into 100; calling costs 50 to contest a current 150-chip pot.</p>
-            <div className="button-row">{['Call', 'Fold', 'Raise'].map((choice) => <button className="choice" key={choice} onClick={() => setNotice(choice === 'Call' ? 'Reasonable practice call: a nine-out draw is about 36% to complete by the river using the Rule of 4. This assumes clean outs and is an estimate, not a guarantee.' : `You chose ${choice}. Consider pot odds, opponent range, and your draw before deciding.`)}>{choice}</button>)}</div>
+            <div className="button-row">{['Call', 'Fold', 'Raise'].map((choice) => <button className="choice" key={choice} onClick={() => setActivityFeedback({ correct: choice === 'Call', text: choice === 'Call' ? 'Reasonable practice call: a nine-out draw is about 36% to complete by the river using the Rule of 4. This assumes clean outs and is an estimate, not a guarantee.' : `You chose ${choice}. Consider pot odds, opponent range, and your draw before deciding.` })}>{choice}</button>)}</div>
+            {renderActivityFeedback()}
           </div>
         );
       case 18: {
@@ -1019,8 +1030,16 @@ function App() {
   );
 }
 
-function ScenarioChoices({ title, prompt, options, correct, setNotice }) {
-  return <div className="activity-box"><h4>{title}</h4><p>{prompt}</p><div className="quick-choices">{options.map((option, index) => <button key={option} className="choice" onClick={() => setNotice(index === correct ? `Correct. ${option}.` : `Try again. Consider the lesson before choosing.`)}>{option}</button>)}</div></div>;
+function ScenarioChoices({ title, prompt, options, correct }) {
+  const [feedback, setFeedback] = useState(null);
+  return (
+    <div className="activity-box">
+      <h4>{title}</h4>
+      <p>{prompt}</p>
+      <div className="quick-choices">{options.map((option, index) => <button key={option} className="choice" onClick={() => setFeedback({ correct: index === correct, text: index === correct ? `Correct. ${option}.` : 'Try again. Consider the lesson before choosing.' })}>{option}</button>)}</div>
+      {feedback && <p className={`feedback ${feedback.correct ? 'correct' : 'incorrect'}`} role="status">{feedback.text}</p>}
+    </div>
+  );
 }
 
 function PlayerPanel({ name, cards, stack, hidden = false }) {
