@@ -654,7 +654,7 @@ h4 { font-size: clamp(1.4rem, 2vw, 1.8rem); }
   margin: 1rem 0;
 }
 
-.position-table {
+.position-selector {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 0.7rem;
@@ -662,6 +662,218 @@ h4 { font-size: clamp(1.4rem, 2vw, 1.8rem); }
   border: 1px solid rgba(199, 166, 90, 0.2);
   border-radius: 50%;
   background: radial-gradient(ellipse at center, #6e1d29, #130d11 74%);
+}
+
+.position-diagram {
+  margin: 0.75rem 0 0;
+  padding: 0.75rem;
+  border: 1px solid rgba(199, 166, 90, 0.25);
+  border-radius: 16px;
+  background: rgba(7, 7, 9, 0.72);
+}
+
+.position-diagram svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.position-diagram figcaption {
+  margin: 0.25rem 0.4rem 0.5rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.position-table-rim {
+  fill: #171316;
+  stroke: var(--gold);
+  stroke-width: 5;
+}
+
+.position-table-felt {
+  fill: #251217;
+  stroke: #b38e46;
+  stroke-width: 2;
+}
+
+.position-table-line {
+  fill: none;
+  stroke: rgba(240, 217, 152, 0.28);
+  stroke-width: 1.5;
+  stroke-dasharray: 4 5;
+}
+
+.position-arrow {
+  fill: none;
+  stroke: var(--gold-soft);
+  stroke-width: 3;
+}
+
+.position-arrowhead {
+  fill: var(--gold-soft);
+}
+
+.position-direction {
+  fill: var(--gold-soft);
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+}
+
+.position-caption {
+  fill: var(--muted);
+  font-size: 10px;
+}
+
+.position-seat circle {
+  stroke: #111013;
+  stroke-width: 3;
+}
+
+.position-seat text {
+  fill: #111013;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.position-seat .position-seat-sub {
+  font-size: 8px;
+  letter-spacing: 0.7px;
+}
+
+.seat-early circle, .position-legend .seat-early {
+  fill: #f0d4d0;
+}
+
+.seat-middle circle, .position-legend .seat-middle {
+  fill: #f0d998;
+}
+
+.seat-late circle, .position-legend .seat-late {
+  fill: #c9dfd5;
+}
+
+.seat-blind circle, .position-legend .seat-blind {
+  fill: #d7d9d8;
+}
+
+.position-legend {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+  margin: 0.75rem 0 1.25rem;
+}
+
+.position-legend span {
+  display: grid;
+  grid-template-columns: 15px auto;
+  align-items: start;
+  gap: 0.15rem 0.5rem;
+  padding: 0.65rem;
+  border: 1px solid rgba(199, 166, 90, 0.2);
+  border-radius: 10px;
+  background: rgba(8, 8, 10, 0.4);
+  color: var(--muted);
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.position-legend strong {
+  color: var(--text);
+}
+
+.position-legend strong,
+.position-legend small {
+  grid-column: 2;
+}
+
+.position-legend small {
+  color: var(--muted);
+  font-size: inherit;
+}
+
+.position-legend i {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+}
+
+.position-legend i {
+  width: 15px;
+  height: 15px;
+  border: 1px solid rgba(17, 16, 19, 0.7);
+  border-radius: 4px;
+}
+
+.position-legend .seat-early {
+  background-color: #f0d4d0;
+}
+
+.position-legend .seat-middle {
+  background-color: #f0d998;
+}
+
+.position-legend .seat-late {
+  background-color: #c9dfd5;
+}
+
+.position-legend .seat-blind {
+  background-color: #d7d9d8;
+}
+
+.position-reference-wrap {
+  overflow-x: auto;
+  margin: 0.75rem 0 1rem;
+  border: 1px solid rgba(199, 166, 90, 0.25);
+  border-radius: 10px;
+}
+
+.position-reference {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  background: rgba(8, 8, 10, 0.65);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.position-reference th:first-child {
+  width: 30%;
+}
+
+.position-reference th:last-child {
+  width: 16%;
+}
+
+.position-reference th,
+.position-reference td {
+  padding: 0.65rem 0.75rem;
+  border: 1px solid rgba(199, 166, 90, 0.2);
+  text-align: left;
+  vertical-align: top;
+}
+
+.position-reference thead {
+  background: rgba(126, 28, 40, 0.55);
+  color: var(--gold-soft);
+}
+
+.position-reference tbody th {
+  color: var(--text);
+  font-weight: 650;
+}
+
+.position-reference tbody td {
+  color: var(--muted);
+}
+
+.position-reference tbody td:last-child {
+  color: var(--gold-soft);
+}
+
+.position-reference .position-row-selected {
+  background: rgba(199, 166, 90, 0.12);
 }
 
 .position, .round {
@@ -958,7 +1170,7 @@ input[type="number"], input[type="search"], select {
     grid-row: 1;
   }
 
-  .position-table {
+  .position-selector {
     border-radius: 22px;
   }
 }

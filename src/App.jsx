@@ -661,18 +661,96 @@ function App() {
           </div>
         );
       }
-      case 4:
+      case 4: {
+        const positions = [
+          { key: 'Dealer / Button', name: 'Button (BTN)', description: 'Holds the dealer button; usually acts last after the flop.', group: 'Late' },
+          { key: 'Small Blind', name: 'Small blind (SB)', description: 'First seat clockwise from the button; posts the small blind.', group: 'Blinds' },
+          { key: 'Big Blind', name: 'Big blind (BB)', description: 'Second seat clockwise from the button; posts the big blind.', group: 'Blinds' },
+          { key: 'Under the Gun', name: 'Under the Gun (UTG)', description: 'First seat to act pre-flop at a full table, after the blinds.', group: 'Early' },
+          { key: 'Hijack (Middle)', name: 'Hijack (HJ)', description: 'Two seats before the button in this six-seat example.', group: 'Middle' },
+          { key: 'Cutoff', name: 'Cutoff (CO)', description: 'The seat immediately before the button.', group: 'Late' },
+        ];
         return (
           <div className="activity-box">
-            <h4>Tap a table position</h4>
-            <div className="position-table">
-              {['Under the Gun', 'Middle Position', 'Cutoff', 'Dealer / Button', 'Small Blind', 'Big Blind'].map((name) => (
-                <button key={name} className={position === name ? 'position selected' : 'position'} onClick={() => { setPosition(name); setPositionDetail(`${name}: ${name === 'Dealer / Button' ? 'acts last after the flop and posts the small blind heads-up.' : name === 'Small Blind' ? 'posts the small blind before the deal.' : name === 'Big Blind' ? 'posts the big blind before the deal.' : name === 'Under the Gun' ? 'acts first pre-flop after the blinds.' : 'acts clockwise; position determines when you receive information.'}`); }}>{name}</button>
+            <h4>Six-seat table positions</h4>
+            <figure className="position-diagram">
+              <svg viewBox="0 0 640 360" role="img" aria-labelledby="position-diagram-title position-diagram-description">
+                <title id="position-diagram-title">Positions around a six-seat poker table</title>
+                <desc id="position-diagram-description">Under the Gun is early position; Hijack is middle; Cutoff and Button are late; Small Blind and Big Blind are the blinds. The dealer button moves clockwise after each hand.</desc>
+                <defs>
+                  <marker id="position-arrowhead" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 z" className="position-arrowhead" />
+                  </marker>
+                </defs>
+                <ellipse cx="320" cy="177" rx="222" ry="113" className="position-table-rim" />
+                <ellipse cx="320" cy="177" rx="210" ry="101" className="position-table-felt" />
+                <ellipse cx="320" cy="177" rx="176" ry="75" className="position-table-line" />
+                <path d="M 213 122 Q 250 102 290 112" className="position-arrow" markerEnd="url(#position-arrowhead)" />
+                <path d="M 330 111 Q 365 111 401 127" className="position-arrow" markerEnd="url(#position-arrowhead)" />
+                <path d="M 429 148 Q 451 174 437 197" className="position-arrow" markerEnd="url(#position-arrowhead)" />
+                <path d="M 427 218 Q 405 242 375 246" className="position-arrow" markerEnd="url(#position-arrowhead)" />
+                <text x="320" y="168" textAnchor="middle" className="position-direction">CLOCKWISE</text>
+                <text x="320" y="190" textAnchor="middle" className="position-caption">Button moves one seat each hand</text>
+                <g className="position-seat seat-early">
+                  <circle cx="320" cy="48" r="34" />
+                  <text x="320" y="45" textAnchor="middle">UTG</text>
+                  <text x="320" y="61" textAnchor="middle" className="position-seat-sub">EARLY</text>
+                </g>
+                <g className="position-seat seat-middle">
+                  <circle cx="515" cy="105" r="35" />
+                  <text x="515" y="102" textAnchor="middle">HJ</text>
+                  <text x="515" y="118" textAnchor="middle" className="position-seat-sub">MIDDLE</text>
+                </g>
+                <g className="position-seat seat-late">
+                  <circle cx="515" cy="249" r="35" />
+                  <text x="515" y="246" textAnchor="middle">CO</text>
+                  <text x="515" y="262" textAnchor="middle" className="position-seat-sub">LATE</text>
+                </g>
+                <g className="position-seat seat-late">
+                  <circle cx="320" cy="306" r="35" />
+                  <text x="320" y="303" textAnchor="middle">BTN</text>
+                  <text x="320" y="319" textAnchor="middle" className="position-seat-sub">LATE</text>
+                </g>
+                <g className="position-seat seat-blind">
+                  <circle cx="125" cy="249" r="35" />
+                  <text x="125" y="246" textAnchor="middle">SB</text>
+                  <text x="125" y="262" textAnchor="middle" className="position-seat-sub">BLIND</text>
+                </g>
+                <g className="position-seat seat-blind">
+                  <circle cx="125" cy="105" r="35" />
+                  <text x="125" y="102" textAnchor="middle">BB</text>
+                  <text x="125" y="118" textAnchor="middle" className="position-seat-sub">BLIND</text>
+                </g>
+              </svg>
+              <figcaption>At a full table, action starts pre-flop with UTG. After the flop, the first active player clockwise from the button acts first.</figcaption>
+            </figure>
+            <div className="position-legend" aria-label="Position groups">
+              <span><i className="seat-early" /><strong>Early</strong><small>UTG acts first before the flop.</small></span>
+              <span><i className="seat-middle" /><strong>Middle</strong><small>HJ is between early and late position.</small></span>
+              <span><i className="seat-late" /><strong>Late</strong><small>CO and BTN act later and get more information.</small></span>
+              <span><i className="seat-blind" /><strong>Blinds</strong><small>SB and BB post forced bets before the deal.</small></span>
+            </div>
+            <h4>Position names</h4>
+            <div className="position-reference-wrap">
+              <table className="position-reference">
+                <thead><tr><th scope="col">Position</th><th scope="col">Who they are</th><th scope="col">Group</th></tr></thead>
+                <tbody>{positions.map(({ key, name, description, group }) => (
+                  <tr key={key} className={position === key ? 'position-row-selected' : ''}>
+                    <th scope="row">{name}</th><td>{description}</td><td>{group}</td>
+                  </tr>
+                ))}</tbody>
+              </table>
+            </div>
+            <h4>Explore each position</h4>
+            <div className="position-selector">
+              {positions.map(({ key, name, description }) => (
+                <button key={key} className={position === key ? 'position selected' : 'position'} onClick={() => { setPosition(key); setPositionDetail(`${name}: ${description}`); }}>{name}</button>
               ))}
             </div>
-            <p role="status">{positionDetail || 'Select a position to see its role.'}</p>
+            <p role="status">{positionDetail || 'Select a position to highlight its role in the reference table.'}</p>
           </div>
         );
+      }
       case 5: {
         const total = Object.entries(chips).reduce((sum, [color, count]) => sum + CHIP_VALUES[color] * count, 0);
         const updateChip = (color, amount) => setChips((counts) => ({ ...counts, [color]: Math.max(0, counts[color] + amount) }));
@@ -905,12 +983,13 @@ function App() {
     </main>
   );
 
+  const canAdvanceModule = quizFeedback !== null && progress.completedModules.includes(currentModule);
   const showModule = (
     <main className="content">
       <section className="panel module-panel">
         <div className="module-header">
           <div><p className="eyebrow">{module.part} · Module {currentModule} of 20</p><h2>{module.title}</h2></div>
-          <div className="module-controls"><button onClick={previousModule} disabled={currentModule === 1}>Previous</button><button onClick={nextModule} disabled={currentModule === 20}>Next</button></div>
+          <div className="module-controls"><button onClick={previousModule} disabled={currentModule === 1}>Previous</button><button onClick={nextModule} disabled={currentModule === MODULES.length || !canAdvanceModule}>Next</button></div>
         </div>
         <p className="module-intro">{module.intro}</p>
         <ul className="lesson-points">{module.points.map((point) => <li key={point}>{point}</li>)}</ul>
@@ -922,7 +1001,11 @@ function App() {
           <div className="button-row"><button className="primary" onClick={submitModuleQuiz}>Check answer</button><button className="secondary" onClick={() => { setSelectedAnswer(null); setQuizFeedback(null); }}>Try again</button></div>
           {quizFeedback && <p className={quizFeedback.correct ? 'feedback correct' : 'feedback incorrect'} role="status">{quizFeedback.text}</p>}
         </div>
-        <div className="module-footer"><button className="secondary" onClick={completeModule}>{progress.completedModules.includes(currentModule) ? 'Module completed ✓' : 'Mark lesson complete'}</button><span>{completedCount} of 20 lessons completed</span></div>
+        <div className="module-footer">
+          <button className="secondary" onClick={completeModule}>{progress.completedModules.includes(currentModule) ? 'Module completed ✓' : 'Mark lesson complete'}</button>
+          <span>{completedCount} of 20 lessons completed</span>
+          {canAdvanceModule && currentModule < MODULES.length && <button className="primary" onClick={() => navigate('module', currentModule + 1)}>Next lesson →</button>}
+        </div>
       </section>
     </main>
   );
