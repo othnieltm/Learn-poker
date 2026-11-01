@@ -1,15 +1,14 @@
 :root {
-  --bg: #0c0f12;
-  --bg-secondary: #121a1a;
-  --panel: rgba(18, 23, 27, 0.9);
-  --panel-alt: rgba(19, 28, 25, 0.85);
+  --bg: #09090b;
+  --bg-secondary: #151316;
+  --panel: rgba(20, 17, 19, 0.9);
+  --panel-alt: rgba(28, 18, 20, 0.85);
   --gold: #c7a65a;
-  --gold-soft: #e7d39a;
-  --emerald: #0f3d35;
-  --emerald-bright: #1e6e5c;
+  --gold-soft: #f0d998;
+  --roulette-red: #a51f2d;
   --text: #f3efe8;
   --muted: #b9b7b1;
-  --red: #a23d3d;
+  --red: #b52b38;
   --shadow: rgba(0, 0, 0, 0.35);
 }
 
@@ -20,7 +19,7 @@ html { scroll-behavior: smooth; }
 body {
   margin: 0;
   font-family: 'Inter', sans-serif;
-  background: radial-gradient(circle at top, #1a2421 0%, var(--bg) 50%, #050709 100%);
+  background: radial-gradient(circle at top, #281316 0%, var(--bg) 50%, #050506 100%);
   color: var(--text);
 }
 
@@ -50,20 +49,34 @@ button:disabled {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  opacity: 0.35;
+  opacity: 0.22;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
+  overflow: hidden;
 }
 
 .roulette-wheel {
   position: relative;
-  width: 520px;
-  height: 520px;
+  width: min(660px, 82vw);
+  aspect-ratio: 1;
+  flex: 0 0 auto;
+  margin-top: 5rem;
   border-radius: 50%;
-  border: 2px solid rgba(199, 166, 90, 0.5);
-  background: radial-gradient(circle, rgba(12, 20, 18, 0.8) 0%, rgba(18, 25, 22, 0.95) 38%, rgba(4, 6, 9, 0.9) 100%);
-  box-shadow: 0 0 80px rgba(0, 0, 0, 0.45);
+  border: 10px solid #9a7734;
+  background:
+    radial-gradient(circle, #111013 0 14%, transparent 14.5%),
+    repeating-conic-gradient(
+      from -4.86deg,
+      #a51f2d 0deg 9.2deg,
+      #d3b05b 9.2deg 9.73deg,
+      #09090b 9.73deg 18.93deg,
+      #d3b05b 18.93deg 19.46deg
+    );
+  box-shadow:
+    0 0 80px rgba(0, 0, 0, 0.65),
+    inset 0 0 0 8px rgba(9, 9, 11, 0.95),
+    inset 0 0 0 12px rgba(240, 217, 152, 0.58);
   animation: spin 20s linear infinite;
 }
 
@@ -71,25 +84,44 @@ button:disabled {
 .roulette-wheel::after {
   content: '';
   position: absolute;
-  inset: 28px;
+  inset: 22px;
   border-radius: 50%;
-  border: 1px solid rgba(199, 166, 90, 0.3);
+  border: 2px solid rgba(240, 217, 152, 0.72);
+  box-shadow: inset 0 0 0 6px rgba(9, 9, 11, 0.72);
 }
 
 .roulette-wheel::after {
-  inset: 70px;
-  background: radial-gradient(circle, rgba(199, 166, 90, 0.08), rgba(255,255,255,0.02));
+  inset: 72px;
+  border-width: 5px;
+  background: radial-gradient(circle, #121013 0 55%, #9a7734 56% 58%, #171316 59% 100%);
+  box-shadow: 0 0 18px rgba(0, 0, 0, 0.55);
 }
 
 .wheel-center {
   position: absolute;
   inset: 50%;
-  width: 64px;
-  height: 64px;
+  z-index: 1;
+  width: 72px;
+  height: 72px;
   transform: translate(-50%, -50%);
   border-radius: 50%;
-  background: radial-gradient(circle, #f3efe8 0%, #c7a65a 60%, #7f6a3c 100%);
-  box-shadow: 0 0 25px rgba(199, 166, 90, 0.7);
+  border: 5px solid #d6b85f;
+  background: radial-gradient(circle, #f3efe8 0%, #c7a65a 56%, #725326 100%);
+  box-shadow: 0 0 25px rgba(199, 166, 90, 0.7), inset 0 0 0 5px rgba(9, 9, 11, 0.5);
+}
+
+.wheel-pointer {
+  position: absolute;
+  z-index: 2;
+  top: -3px;
+  left: 50%;
+  width: 0;
+  height: 0;
+  transform: translateX(-50%);
+  border-right: 13px solid transparent;
+  border-bottom: 30px solid #f0d998;
+  border-left: 13px solid transparent;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.8));
 }
 
 @keyframes spin {
@@ -124,7 +156,7 @@ button:disabled {
   border-radius: 50%;
   display: grid;
   place-items: center;
-  background: linear-gradient(135deg, rgba(199,166,90,0.3), rgba(15,61,53,0.4));
+  background: linear-gradient(135deg, rgba(199,166,90,0.3), rgba(165,31,45,0.4));
   border: 1px solid rgba(199,166,90,0.4);
   font-size: 1.7rem;
 }
@@ -170,7 +202,7 @@ h4 { font-size: clamp(1.4rem, 2vw, 1.8rem); }
 }
 
 .secondary {
-  background: rgba(19, 52, 46, 0.8);
+  background: rgba(92, 24, 32, 0.72);
 }
 
 .main-nav button:hover, .nav-toggle:hover, .module-controls button:hover, .choice:hover,
@@ -258,7 +290,7 @@ h4 { font-size: clamp(1.4rem, 2vw, 1.8rem); }
   display: block;
   height: 100%;
   border-radius: inherit;
-  background: linear-gradient(90deg, var(--gold), var(--emerald-bright));
+  background: linear-gradient(90deg, var(--roulette-red), var(--gold));
 }
 
 .summary-list {
@@ -361,7 +393,7 @@ h4 { font-size: clamp(1.4rem, 2vw, 1.8rem); }
 }
 
 .player-panel, .table-center {
-  background: rgba(8, 18, 16, 0.8);
+  background: rgba(12, 10, 12, 0.82);
   border: 1px solid rgba(199,166,90,0.16);
   border-radius: 22px;
   padding: 1rem;
@@ -465,7 +497,7 @@ h4 { font-size: clamp(1.4rem, 2vw, 1.8rem); }
   padding: 0.9rem 1rem;
   border: 1px solid rgba(199, 166, 90, 0.5);
   border-radius: 12px;
-  background: rgba(15, 44, 37, 0.96);
+  background: rgba(56, 18, 24, 0.96);
   color: var(--text);
 }
 
@@ -571,7 +603,7 @@ h4 { font-size: clamp(1.4rem, 2vw, 1.8rem); }
   padding: 1.3rem;
   border: 1px solid rgba(199, 166, 90, 0.2);
   border-radius: 18px;
-  background: rgba(10, 25, 21, 0.78);
+  background: rgba(24, 13, 16, 0.84);
 }
 
 .activity-box > p, .activity-box label, .quiz-box > p {
@@ -614,7 +646,7 @@ h4 { font-size: clamp(1.4rem, 2vw, 1.8rem); }
 
 .playing-card.hidden-card {
   color: var(--gold-soft);
-  background: repeating-linear-gradient(45deg, #123f36, #123f36 6px, #0d3029 6px, #0d3029 12px);
+  background: repeating-linear-gradient(45deg, #8b1926, #8b1926 6px, #111013 6px, #111013 12px);
   border: 2px solid rgba(199, 166, 90, 0.55);
 }
 
@@ -629,7 +661,7 @@ h4 { font-size: clamp(1.4rem, 2vw, 1.8rem); }
   padding: 1rem;
   border: 1px solid rgba(199, 166, 90, 0.2);
   border-radius: 50%;
-  background: radial-gradient(ellipse at center, #144a3e, #0d2823 74%);
+  background: radial-gradient(ellipse at center, #6e1d29, #130d11 74%);
 }
 
 .position, .round {
@@ -798,13 +830,13 @@ input[type="number"], input[type="search"], select {
 }
 
 .feedback.correct {
-  color: #a9e3bd;
-  background: rgba(25, 88, 52, .35);
+  color: var(--gold-soft);
+  background: rgba(199, 166, 90, .14);
 }
 
 .feedback.incorrect {
   color: #ffd2be;
-  background: rgba(122, 54, 35, .35);
+  background: rgba(122, 28, 39, .38);
 }
 
 .module-footer, .toggle-row, .app-footer {

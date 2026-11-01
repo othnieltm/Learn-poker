@@ -992,7 +992,7 @@ function App() {
 
   return (
     <div className={`app-shell ${progress.settings.reducedMotion ? 'reduce-motion' : ''}`}>
-      <div className="roulette-bg" aria-hidden="true"><div className="roulette-wheel"><div className="wheel-center" /></div></div>
+      <div className="roulette-bg" aria-hidden="true"><div className="roulette-wheel"><span className="wheel-pointer" /><div className="wheel-center" /></div></div>
       <header className="topbar">
         <button className="brand-wrap brand-button" onClick={() => navigate('dashboard')} aria-label="Poker Academy dashboard"><span className="brand-mark">♠</span><span><span className="eyebrow">Poker Academy</span><strong>Master the Game</strong></span></button>
         <button className="nav-toggle" aria-expanded={menuOpen} onClick={() => setMenuOpen((open) => !open)}>Menu</button>
